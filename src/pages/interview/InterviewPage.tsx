@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import { questionService } from '../../services/questionService';
 import { Question } from '../../types';
 import {
@@ -14,6 +15,7 @@ import {
 } from 'lucide-react';
 
 export const InterviewPage: React.FC = () => {
+  const { user } = useAuth();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [selectedSubcat, setSelectedSubcat] = useState<string>('ALL');
   const [personalAnswers, setPersonalAnswers] = useState<Record<string, string>>({});
@@ -27,18 +29,27 @@ export const InterviewPage: React.FC = () => {
         setQuestions(items);
         if (items.length > 0) setExpandedId(items[0].id);
 
-        // Load saved answers from localStorage
-        const saved = localStorage.getItem('ssb_mentor_interview_answers');
-        if (saved) setPersonalAnswers(JSON.parse(saved));
+        // Load saved answers scoped by user ID
+        if (user) {
+          const storageKey = `ssb_mentor_interview_answers_${user.id}`;
+          const saved = localStorage.getItem(storageKey);
+          if (saved) {
+            setPersonalAnswers(JSON.parse(saved));
+          } else {
+            setPersonalAnswers({});
+          }
+        }
       } catch (e) {
         console.error('Failed to load interview questions:', e);
       }
     };
     loadInterviewData();
-  }, []);
+  }, [user]);
 
   const handleSaveAnswer = (qId: string) => {
-    localStorage.setItem('ssb_mentor_interview_answers', JSON.stringify(personalAnswers));
+    if (!user) return;
+    const storageKey = `ssb_mentor_interview_answers_${user.id}`;
+    localStorage.setItem(storageKey, JSON.stringify(personalAnswers));
     setSaveStatus(qId);
     setTimeout(() => setSaveStatus(null), 2500);
   };
@@ -152,7 +163,7 @@ export const InterviewPage: React.FC = () => {
 
                   <div className="flex items-center justify-between pt-2">
                     <span className="text-xs text-slate-400">
-                      Private: Never shared with other candidates.
+                      Private: Scoped strictly to your user profile ({user?.email}).
                     </span>
 
                     <button

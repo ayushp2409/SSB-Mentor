@@ -10,35 +10,7 @@ function getLocalReflections(): ReflectionEntry[] {
     const raw = localStorage.getItem(STORAGE_KEY_REFLECTIONS);
     if (raw) return JSON.parse(raw);
   } catch (e) {}
-
-  // Prepopulate standard SDT structure for cadet
-  const initialSDT: ReflectionEntry = {
-    id: 'sdt_template_001',
-    userId: 'usr_student_001',
-    title: 'Self-Description Test (SDT) - Master Draft',
-    category: 'SDT',
-    content: `### 1. Parents' Opinion
-My parents consider me a responsible, dependable, and hardworking individual who always values family commitments. They appreciate my calm demeanour during domestic crises and my habit of planning ahead, though they sometimes advise me not to be overly perfectionist.
-
-### 2. Teachers' / Mentors' Opinion
-My teachers and professors have viewed me as an attentive, proactive student who actively participates in sports and group projects. They recognize my clarity of expression and reliability in executing leadership roles, though they encouraged me to delegate more often.
-
-### 3. Friends' Opinion
-My friends look upon me as a loyal, supportive, and cheerful companion who can be counted upon in any emergency. They value my sense of humor and candid advice, occasionally teasing me about my punctuality and strict adherence to schedules.
-
-### 4. Self-Perception
-I perceive myself as an emotionally balanced, curious, and determined person who welcomes challenges. I take ownership of my actions and believe in continuous personal learning through sports and physical fitness.
-
-### 5. Qualities I Aim to Develop
-I am actively working on expanding my depth in international geopolitics and improving my conversational Hindi fluency to communicate seamlessly across all ranks.`,
-    tags: ['sdt', 'psychology', 'self_awareness', 'parents', 'teachers', 'friends'],
-    createdAt: '2026-10-24T10:00:00Z',
-    updatedAt: '2026-10-24T10:00:00Z',
-  };
-
-  const init = [initialSDT];
-  localStorage.setItem(STORAGE_KEY_REFLECTIONS, JSON.stringify(init));
-  return init;
+  return [];
 }
 
 function saveLocalReflections(items: ReflectionEntry[]) {
@@ -70,8 +42,42 @@ export const reflectionService = {
       const snap = await getDocs(q);
       return snap.docs.map(d => d.data() as ReflectionEntry);
     }
+
     const local = getLocalReflections();
-    return local.filter(r => r.userId === userId).sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+    const userReflections = local.filter(r => r.userId === userId);
+
+    if (userReflections.length === 0) {
+      // Initialize an individualized SDT master draft for this specific user
+      const initialSDT: ReflectionEntry = {
+        id: `sdt_${userId}`,
+        userId,
+        title: 'Self-Description Test (SDT) - Master Draft',
+        category: 'SDT',
+        content: `### 1. Parents' Opinion
+My parents consider me a responsible, dependable, and hardworking individual who always values family commitments. They appreciate my calm demeanour during domestic crises and my habit of planning ahead, though they sometimes advise me not to be overly perfectionist.
+
+### 2. Teachers' / Mentors' Opinion
+My teachers and professors have viewed me as an attentive, proactive student who actively participates in sports and group projects. They recognize my clarity of expression and reliability in executing leadership roles, though they encouraged me to delegate more often.
+
+### 3. Friends' Opinion
+My friends look upon me as a loyal, supportive, and cheerful companion who can be counted upon in any emergency. They value my sense of humor and candid advice, occasionally teasing me about my punctuality and strict adherence to schedules.
+
+### 4. Self-Perception
+I perceive myself as an emotionally balanced, curious, and determined person who welcomes challenges. I take ownership of my actions and believe in continuous personal learning through sports and physical fitness.
+
+### 5. Qualities I Aim to Develop
+I am actively working on expanding my depth in international geopolitics and improving my conversational Hindi fluency to communicate seamlessly across all ranks.`,
+        tags: ['sdt', 'psychology', 'self_awareness', 'parents', 'teachers', 'friends'],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      local.push(initialSDT);
+      saveLocalReflections(local);
+      return [initialSDT];
+    }
+
+    return userReflections.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
   },
 
   async saveReflection(entry: ReflectionEntry): Promise<ReflectionEntry> {
@@ -99,9 +105,9 @@ export const reflectionService = {
 
   // Spaced Repetition Bookmarks
   async addRevisionItem(userId: string, questionId: string, module: QuestionCategory, notes: string): Promise<RevisionItem> {
-    const nextDate = new Date(Date.now() + 3 * 86400000).toISOString().split('T')[0]; // 3 days review interval
+    const nextDate = new Date(Date.now() + 3 * 86400000).toISOString().split('T')[0];
     const item: RevisionItem = {
-      id: `rev_${Date.now()}`,
+      id: `rev_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
       userId,
       questionId,
       module,

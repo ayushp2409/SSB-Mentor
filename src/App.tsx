@@ -28,6 +28,7 @@ export const App: React.FC = () => {
           {/* Public Auth Routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/signup" element={<RegisterPage />} />
 
           {/* Protected Application Routes wrapped in AppLayout */}
           <Route element={<AppLayout />}>

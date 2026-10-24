@@ -8,7 +8,7 @@ interface AuthContextType {
   isAdmin: boolean;
   isLoading: boolean;
   login: (email: string, pass: string) => Promise<void>;
-  register: (email: string, pass: string, name: string, entry?: string) => Promise<void>;
+  register: (email: string, pass: string) => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (updates: Partial<UserProfile>) => Promise<void>;
   switchDemoRole: (role: UserRole) => void;
@@ -41,10 +41,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (email: string, pass: string, name: string, entry?: string) => {
+  const register = async (email: string, pass: string) => {
     setIsLoading(true);
     try {
-      const u = await authService.register(email, pass, name, entry);
+      const u = await authService.register(email, pass);
       setUser(u);
     } finally {
       setIsLoading(false);

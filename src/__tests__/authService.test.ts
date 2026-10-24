@@ -1,43 +1,53 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { authService } from '../services/authService';
+import { authService, generateUserIdFromEmail } from '../services/authService';
 
-describe('Auth Service & Role Security Guard', () => {
+describe('Auth Service & User Progress Isolation', () => {
   beforeEach(() => {
     localStorage.clear();
   });
 
-  it('provides default demo cadet profile when unauthenticated', () => {
+  it('returns null when visitor is unauthenticated', () => {
     const user = authService.getCurrentUser();
-    expect(user).not.toBeNull();
-    expect(user?.role).toBe('student');
-    expect(user?.email).toBe('cadet@ssbmentor.in');
+    expect(user).toBeNull();
   });
 
-  it('strictly prevents client registration from assigning admin role', async () => {
-    const registered = await authService.register(
-      'newcandidate@test.in',
-      'Password123',
-      'Cadet Test',
-      'NDA'
-    );
+  it('allows signup with only email and password (no external auth required)', async () => {
+    const registered = await authService.register('cadet_vikram@gmail.com', 'mypassword');
+    expect(registered).toBeDefined();
+    expect(registered.email).toBe('cadet_vikram@gmail.com');
     expect(registered.role).toBe('student');
-    expect(registered.displayName).toBe('Cadet Test');
-    expect(registered.targetEntry).toBe('NDA');
+    expect(registered.id).toBe(generateUserIdFromEmail('cadet_vikram@gmail.com'));
+    expect(registered.displayName).toContain('Cadet Vikram');
+
+    // Currently logged in user should be this registered cadet
+    const current = authService.getCurrentUser();
+    expect(current?.email).toBe('cadet_vikram@gmail.com');
   });
 
-  it('rejects duplicate email registrations', async () => {
-    await authService.register('duplicate@test.in', 'Pass1', 'Cadet One');
-    await expect(
-      authService.register('duplicate@test.in', 'Pass2', 'Cadet Two')
-    ).rejects.toThrow('already exists');
+  it('allows logging in with registered email and password', async () => {
+    await authService.register('aspirant2026@gmail.com', 'securepass123');
+    await authService.logout();
+    expect(authService.getCurrentUser()).toBeNull();
+
+    const loggedIn = await authService.login('aspirant2026@gmail.com', 'securepass123');
+    expect(loggedIn.email).toBe('aspirant2026@gmail.com');
+    expect(authService.getCurrentUser()?.email).toBe('aspirant2026@gmail.com');
   });
 
-  it('allows switching demo role for administrative evaluation', () => {
-    const admin = authService.switchDemoRole('admin');
-    expect(admin.role).toBe('admin');
-    expect(admin.email).toBe('admin@ssbmentor.in');
+  it('rejects login with invalid password', async () => {
+    await authService.register('cadet@test.in', 'correctpassword');
+    await authService.logout();
 
-    const cadet = authService.switchDemoRole('student');
-    expect(cadet.role).toBe('student');
+    await expect(authService.login('cadet@test.in', 'wrongpassword')).rejects.toThrow('Incorrect password');
+  });
+
+  it('isolates user identities between different email accounts', async () => {
+    const userA = await authService.register('cadetA@gmail.com', 'passA');
+    await authService.logout();
+
+    const userB = await authService.register('cadetB@gmail.com', 'passB');
+
+    expect(userA.id).not.toBe(userB.id);
+    expect(userA.email).not.toBe(userB.email);
   });
 });
