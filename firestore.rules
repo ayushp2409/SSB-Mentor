@@ -1,0 +1,106 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Role verification strictly via users doc or custom claims, never client-supplied fields
+    function isAdmin() {
+      return isAuthenticated() && (
+        (request.auth.token.admin == true) ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin")
+      );
+    }
+
+    // USERS COLLECTION
+    match /users/{userId} {
+      // Any authenticated user can read their own profile; admins can read any
+      allow read: if isOwner(userId) || isAdmin();
+
+      // Users can create their own profile upon registration, but CANNOT self-assign 'admin' role
+      allow create: if isOwner(userId) &&
+                       (!request.resource.data.keys().hasAny(['role']) ||
+                        request.resource.data.role == 'student');
+
+      // Users can update their profile preferences, target dates, etc., but CANNOT modify 'role'
+      allow update: if (isOwner(userId) &&
+                        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role'])) ||
+                       isAdmin();
+
+      // Only admins can delete profiles or change roles
+      allow delete: if isAdmin();
+    }
+
+    // QUESTIONS COLLECTION
+    match /questions/{questionId} {
+      // Anyone authenticated can read published questions; admins can read all (including drafts & archived)
+      allow read: if (isAuthenticated() && resource.data.publicationStatus == "published") || isAdmin();
+
+      // Only administrators can create, update, or delete question bank entries
+      allow write: if isAdmin();
+    }
+
+    // TEST PROFILES COLLECTION
+    match /testProfiles/{profileId} {
+      // Anyone authenticated can read active test profiles
+      allow read: if (isAuthenticated() && resource.data.isActive == true) || isAdmin();
+
+      // Only administrators can modify test timing configurations and rules
+      allow write: if isAdmin();
+    }
+
+    // TEST ATTEMPTS COLLECTION (Private student attempts and responses)
+    match /testAttempts/{attemptId} {
+      // Only the attempt owner or an administrator can read the attempt
+      allow read: if (isAuthenticated() && resource.data.userId == request.auth.uid) || isAdmin();
+
+      // Only authenticated users can create attempts for themselves
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+
+      // Only the owner can update their in-progress attempt (autosave, submission)
+      allow update: if (isAuthenticated() && resource.data.userId == request.auth.uid) || isAdmin();
+
+      // Only owner or admin can delete
+      allow delete: if (isAuthenticated() && resource.data.userId == request.auth.uid) || isAdmin();
+    }
+
+    // DAILY PLANS COLLECTION (Private student plans)
+    match /dailyPlans/{planId} {
+      // Plan format: userId_date
+      allow read: if (isAuthenticated() && resource.data.userId == request.auth.uid) || isAdmin();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update: if (isAuthenticated() && resource.data.userId == request.auth.uid) || isAdmin();
+      allow delete: if (isAuthenticated() && resource.data.userId == request.auth.uid) || isAdmin();
+    }
+
+    // REFLECTIONS & JOURNAL COLLECTION
+    match /reflections/{reflectionId} {
+      // Strictly private: never visible to other students
+      allow read: if (isAuthenticated() && resource.data.userId == request.auth.uid) || isAdmin();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update: if (isAuthenticated() && resource.data.userId == request.auth.uid) || isAdmin();
+      allow delete: if (isAuthenticated() && resource.data.userId == request.auth.uid) || isAdmin();
+    }
+
+    // REVISION ITEMS / BOOKMARKS
+    match /revisionItems/{revisionId} {
+      allow read: if (isAuthenticated() && resource.data.userId == request.auth.uid) || isAdmin();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update: if (isAuthenticated() && resource.data.userId == request.auth.uid) || isAdmin();
+      allow delete: if (isAuthenticated() && resource.data.userId == request.auth.uid) || isAdmin();
+    }
+
+    // IMPORT BATCHES & AUDIT RECORDS
+    match /importBatches/{batchId} {
+      allow read, write: if isAdmin();
+    }
+  }
+}

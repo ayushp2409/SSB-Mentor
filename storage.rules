@@ -1,0 +1,39 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        (request.auth.token.admin == true) ||
+        (firestore.exists(/databases/(default)/documents/users/$(request.auth.uid)) &&
+         firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == "admin")
+      );
+    }
+
+    // Public Question Assets (Images, Diagrams, Reference PDFs)
+    match /questions/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() &&
+                      request.resource.size < 25 * 1024 * 1024 &&
+                      (request.resource.contentType.matches('image/.*') ||
+                       request.resource.contentType == 'application/pdf');
+    }
+
+    // Private Student Audio Recordings (Lecturette / PPDT Narration)
+    match /users/{userId}/recordings/{fileName} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow write: if isOwner(userId) &&
+                      request.resource.size < 25 * 1024 * 1024 &&
+                      request.resource.contentType.matches('audio/.*');
+      allow delete: if isOwner(userId) || isAdmin();
+    }
+  }
+}

@@ -1,0 +1,60 @@
+[
+  {
+    "id": "gto_001",
+    "category": "GTO",
+    "subcategory": "GPE",
+    "title": "GPE Scenario 1: The Bridge & Flood Relief Operation",
+    "content": "You are a group of 8 NCC cadets on a cycling expedition near Rampur. At 1400 hrs, you receive four critical alerts: (1) A passenger bus with 20 pilgrims has broken down on a railway bridge with the 1445 hrs Express train approaching; (2) The river embankment at Mohanpur has breached and flood water threatens a school 4 km away; (3) A farmer has been bitten by a poisonous snake in a nearby farm and requires anti-venom within 45 minutes; (4) Terrorist elements were seen cutting telephone lines at the repeater tower. Available resources: 8 bicycles, a police jeep with 5 liters fuel at the checkpost 2 km away, 1 local villager with a motorboat, first aid kit, 4 ropes, and your personal mobile phone (low battery). Time now is 1400 hrs. Plan your actions.",
+    "assetStoragePath": null,
+    "assetUrl": null,
+    "metadata": {
+      "readingMinutes": 5,
+      "writingMinutes": 10,
+      "discussionMinutes": 15
+    },
+    "sourceArchive": "drive-download-20261024T144514Z-1-001.zip",
+    "sourceFilename": "GPE Practice.pdf",
+    "sourceReference": "Group Planning Exercise Real Board Sets",
+    "tags": [
+      "gto",
+      "gpe",
+      "group_planning",
+      "prioritization",
+      "resource_management"
+    ],
+    "difficulty": "advanced",
+    "verificationStatus": "verified",
+    "publicationStatus": "published",
+    "createdAt": "2026-10-24T20:55:00Z",
+    "updatedAt": "2026-10-24T20:55:00Z"
+  },
+  {
+    "id": "gto_002",
+    "category": "GTO",
+    "subcategory": "GPE",
+    "title": "GPE Scenario 2: The Forest Fire & Train Derailment Alert",
+    "content": "You are a group of college students trekking in the Shivalik foothills. At 1000 hrs, you observe: (1) Fishplates removed from the railway track near Tunnel 4, where the Shatabdi Express is due at 1045 hrs; (2) A rapidly spreading forest fire threatening an eco-resort with 15 tourists trapped 3 km uphill; (3) An injured forest guard lying unconscious on the forest trail with head injuries; (4) A bag containing suspected explosives abandoned near the dam reservoir. Resources: 6 students, 2 motorcycles with full tanks, a hand-cranked radio at the forest watchtower 1.5 km away, first aid supplies, and climbing ropes. Time now: 1000 hrs. As young citizens, what will you do?",
+    "assetStoragePath": null,
+    "assetUrl": null,
+    "metadata": {
+      "readingMinutes": 5,
+      "writingMinutes": 10,
+      "discussionMinutes": 15
+    },
+    "sourceArchive": "drive-download-20261024T144514Z-1-001.zip",
+    "sourceFilename": "GPE Practice.pdf",
+    "sourceReference": "Group Planning Exercise Real Board Sets",
+    "tags": [
+      "gto",
+      "gpe",
+      "group_planning",
+      "prioritization",
+      "resource_management"
+    ],
+    "difficulty": "advanced",
+    "verificationStatus": "verified",
+    "publicationStatus": "published",
+    "createdAt": "2026-10-24T20:55:00Z",
+    "updatedAt": "2026-10-24T20:55:00Z"
+  }
+]

@@ -1,0 +1,380 @@
+{
+  "timestamp": "2026-10-24T20:53:00+05:30",
+  "archive_count": 8,
+  "total_source_archives": [
+    {
+      "archive": "drive-download-20261024T144514Z-1-001.zip",
+      "category": "GTO",
+      "subcategory": "GPE",
+      "size_mb": 55.91,
+      "files_count": 15,
+      "uncompressed_mb": 148.99
+    },
+    {
+      "archive": "drive-download-20261024T144713Z-1-001.zip",
+      "category": "INTERVIEW",
+      "subcategory": "PERSONAL_INTERVIEW",
+      "size_mb": 33.78,
+      "files_count": 21,
+      "uncompressed_mb": 35.52
+    },
+    {
+      "archive": "drive-download-20261024T144845Z-1-001.zip",
+      "category": "LECTURETTE",
+      "subcategory": "TOPICS",
+      "size_mb": 48.37,
+      "files_count": 10,
+      "uncompressed_mb": 49.68
+    },
+    {
+      "archive": "drive-download-20261024T145407Z-1-001.zip",
+      "category": "SRT",
+      "subcategory": "SITUATION_REACTION",
+      "size_mb": 11.15,
+      "files_count": 15,
+      "uncompressed_mb": 13.85
+    },
+    {
+      "archive": "drive-download-20261024T150103Z-1-001.zip",
+      "category": "TAT",
+      "subcategory": "PICTURES_AND_STORIES",
+      "size_mb": 82.67,
+      "files_count": 15,
+      "uncompressed_mb": 84.47
+    },
+    {
+      "archive": "drive-download-20261024T150301Z-1-001.zip",
+      "category": "OIR",
+      "subcategory": "DIPR_BOOKLETS",
+      "size_mb": 243.83,
+      "files_count": 53,
+      "uncompressed_mb": 256.43
+    },
+    {
+      "archive": "drive-download-20261024T150456Z-1-001.zip",
+      "category": "PPDT",
+      "subcategory": "PICTURE_PERCEPTION",
+      "size_mb": 82.44,
+      "files_count": 4,
+      "uncompressed_mb": 85.57
+    },
+    {
+      "archive": "drive-download-20261024T150622Z-1-001.zip",
+      "category": "WAT",
+      "subcategory": "WORD_ASSOCIATION",
+      "size_mb": 1.82,
+      "files_count": 6,
+      "uncompressed_mb": 2.83
+    }
+  ],
+  "extension_breakdown": {
+    ".pdf": 134,
+    ".pptx": 2,
+    ".ppt": 3
+  },
+  "duplicate_count": 14,
+  "duplicates": [
+    {
+      "crc": "180f08d1",
+      "file_size": 73755,
+      "file1": {
+        "archive": "drive-download-20261024T145407Z-1-001.zip",
+        "filename": "a. SRT 11 (1).pdf"
+      },
+      "file2": {
+        "archive": "drive-download-20261024T145407Z-1-001.zip",
+        "filename": "a. SRT 11.pdf"
+      }
+    },
+    {
+      "crc": "338abf0e",
+      "file_size": 11747673,
+      "file1": {
+        "archive": "drive-download-20261024T150103Z-1-001.zip",
+        "filename": "TAT OF ALL BOARDS.pdf"
+      },
+      "file2": {
+        "archive": "drive-download-20261024T150103Z-1-001.zip",
+        "filename": "TAT OF ALL BOARDS @Pehlakadamop.pdf"
+      }
+    },
+    {
+      "crc": "5abbb0a8",
+      "file_size": 583670,
+      "file1": {
+        "archive": "drive-download-20261024T150301Z-1-001.zip",
+        "filename": "Booklet 34 - 2 (2).pdf"
+      },
+      "file2": {
+        "archive": "drive-download-20261024T150301Z-1-001.zip",
+        "filename": "Booklet 34 - 2.pdf"
+      }
+    },
+    {
+      "crc": "525fd889",
+      "file_size": 3859210,
+      "file1": {
+        "archive": "drive-download-20261024T150301Z-1-001.zip",
+        "filename": "DIPR BOOKLET 53 WITH ANSEERS (1)(1).pdf"
+      },
+      "file2": {
+        "archive": "drive-download-20261024T150301Z-1-001.zip",
+        "filename": "DIPR BOOKLET 53 WITH ANSEERS (1).pdf"
+      }
+    },
+    {
+      "crc": "041f8d71",
+      "file_size": 1650596,
+      "file1": {
+        "archive": "drive-download-20261024T150301Z-1-001.zip",
+        "filename": "Booklet 55(1).pdf"
+      },
+      "file2": {
+        "archive": "drive-download-20261024T150301Z-1-001.zip",
+        "filename": "Booklet 55.pdf"
+      }
+    },
+    {
+      "crc": "d34b2135",
+      "file_size": 3385474,
+      "file1": {
+        "archive": "drive-download-20261024T150301Z-1-001.zip",
+        "filename": "Booklet 35 - 2.pdf"
+      },
+      "file2": {
+        "archive": "drive-download-20261024T150301Z-1-001.zip",
+        "filename": "Booklet 35 - 2(1).pdf"
+      }
+    },
+    {
+      "crc": "d34b2135",
+      "file_size": 3385474,
+      "file1": {
+        "archive": "drive-download-20261024T150301Z-1-001.zip",
+        "filename": "Booklet 35 - 2.pdf"
+      },
+      "file2": {
+        "archive": "drive-download-20261024T150301Z-1-001.zip",
+        "filename": "OIR BENGALURU AND KAPURTHALA.pdf"
+      }
+    },
+    {
+      "crc": "d34b2135",
+      "file_size": 3385474,
+      "file1": {
+        "archive": "drive-download-20261024T150301Z-1-001.zip",
+        "filename": "Booklet 35 - 2.pdf"
+      },
+      "file2": {
+        "archive": "drive-download-20261024T150301Z-1-001.zip",
+        "filename": "OIR BENGALURU AND KAPURTHALA (1).pdf"
+      }
+    },
+    {
+      "crc": "81b4891f",
+      "file_size": 2016272,
+      "file1": {
+        "archive": "drive-download-20261024T150301Z-1-001.zip",
+        "filename": "OIR 54C (1).pdf"
+      },
+      "file2": {
+        "archive": "drive-download-20261024T150301Z-1-001.zip",
+        "filename": "OIR 54C.pdf"
+      }
+    },
+    {
+      "crc": "bc5270b6",
+      "file_size": 7570188,
+      "file1": {
+        "archive": "drive-download-20261024T150301Z-1-001.zip",
+        "filename": "mixed oir of 201,202, bhopal oir , jalandhar mixed oir.pdf"
+      },
+      "file2": {
+        "archive": "drive-download-20261024T150301Z-1-001.zip",
+        "filename": "SSB Bhopal Mock 1 (1).pdf"
+      }
+    },
+    {
+      "crc": "b3f1ba1f",
+      "file_size": 8179550,
+      "file1": {
+        "archive": "drive-download-20261024T150301Z-1-001.zip",
+        "filename": "IMPACT_OIR(1)(1).pdf"
+      },
+      "file2": {
+        "archive": "drive-download-20261024T150301Z-1-001.zip",
+        "filename": "IMPACT_OIR(1).pdf"
+      }
+    },
+    {
+      "crc": "cc4f8041",
+      "file_size": 10538750,
+      "file1": {
+        "archive": "drive-download-20261024T150301Z-1-001.zip",
+        "filename": "OIR-1.pdf"
+      },
+      "file2": {
+        "archive": "drive-download-20261024T150301Z-1-001.zip",
+        "filename": "OIR-1(1).pdf"
+      }
+    },
+    {
+      "crc": "2ca3e1e1",
+      "file_size": 15116941,
+      "file1": {
+        "archive": "drive-download-20261024T150301Z-1-001.zip",
+        "filename": "Bhopal Actual OIR.pdf"
+      },
+      "file2": {
+        "archive": "drive-download-20261024T150301Z-1-001.zip",
+        "filename": "Bhopal Actual OIR(1).pdf"
+      }
+    },
+    {
+      "crc": "bc5270b6",
+      "file_size": 7570188,
+      "file1": {
+        "archive": "drive-download-20261024T150301Z-1-001.zip",
+        "filename": "mixed oir of 201,202, bhopal oir , jalandhar mixed oir.pdf"
+      },
+      "file2": {
+        "archive": "drive-download-20261024T150301Z-1-001.zip",
+        "filename": "SSB Bhopal Mock 1.pdf"
+      }
+    }
+  ],
+  "suspicious_entries_count": 0,
+  "suspicious_entries": [],
+  "total_manifest_items": 139,
+  "extraction_errors": [],
+  "items_requiring_manual_review": [
+    {
+      "id": "gto_407a6cd87c65",
+      "category": "GTO",
+      "subcategory": "GPE",
+      "title": "Gpe Solution Handwritten",
+      "original_filename": "GPE solution handwritten.pdf",
+      "staged_path": "data/staging/GTO/GPE solution handwritten.pdf",
+      "file_size": 494304,
+      "file_extension": ".pdf",
+      "sha256": "ecc050ed940fae1ffda30a18bbb7bf2e580e73e09dd028012709b3726c4c86ca",
+      "source_archive": "drive-download-20261024T144514Z-1-001.zip",
+      "verification_status": "unverified",
+      "publication_status": "draft",
+      "supported_format": true,
+      "requires_manual_review": true
+    },
+    {
+      "id": "tat_5aa76b99ea22",
+      "category": "TAT",
+      "subcategory": "PICTURES_AND_STORIES",
+      "title": "Vi Tat Set 1",
+      "original_filename": "Vi TAT set 1.pptx",
+      "staged_path": "data/staging/TAT/Vi TAT set 1.pptx",
+      "file_size": 5640909,
+      "file_extension": ".pptx",
+      "sha256": "07a8bbdc25b5031dd644bd6ea8373f4020f30503466b75d6c24045b28cf2d4ff",
+      "source_archive": "drive-download-20261024T150103Z-1-001.zip",
+      "verification_status": "unverified",
+      "publication_status": "draft",
+      "supported_format": false,
+      "requires_manual_review": true
+    },
+    {
+      "id": "oir_61a744f49929",
+      "category": "OIR",
+      "subcategory": "DIPR_BOOKLETS",
+      "title": "Dipr Oir 169 Mixed(With Answers)",
+      "original_filename": "DIPR OIR 169 mixed(with answers).pdf",
+      "staged_path": "data/staging/OIR/DIPR OIR 169 mixed(with answers).pdf",
+      "file_size": 7686218,
+      "file_extension": ".pdf",
+      "sha256": "bf139625996e2c0414eb1764c8fc9f3a41d57a538d930db1b02a3367c5bea2a0",
+      "source_archive": "drive-download-20261024T150301Z-1-001.zip",
+      "verification_status": "unverified",
+      "publication_status": "draft",
+      "supported_format": true,
+      "requires_manual_review": true
+    },
+    {
+      "id": "oir_0c288dd84e56",
+      "category": "OIR",
+      "subcategory": "DIPR_BOOKLETS",
+      "title": "Mixed Oir Of 201,202, Bhopal Oir , Jalandhar Mixed Oir",
+      "original_filename": "mixed oir of 201,202, bhopal oir , jalandhar mixed oir.pdf",
+      "staged_path": "data/staging/OIR/mixed oir of 201,202, bhopal oir , jalandhar mixed oir.pdf",
+      "file_size": 7570188,
+      "file_extension": ".pdf",
+      "sha256": "4965a35660cd6d0e423bef9031958497fef9dfbc740483593e3d2977ac1d8f5b",
+      "source_archive": "drive-download-20261024T150301Z-1-001.zip",
+      "verification_status": "unverified",
+      "publication_status": "draft",
+      "supported_format": true,
+      "requires_manual_review": true
+    },
+    {
+      "id": "wat_e947643f8abc",
+      "category": "WAT",
+      "subcategory": "WORD_ASSOCIATION",
+      "title": "Wat 1 - Practice Test (F)",
+      "original_filename": "WAT 1 - PRACTICE TEST (F).ppt",
+      "staged_path": "data/staging/WAT/WAT 1 - PRACTICE TEST (F).ppt",
+      "file_size": 195584,
+      "file_extension": ".ppt",
+      "sha256": "fa50ccd3a44d1d03a83873a12bed927b85d73770cf6add9fbca7d634e0f588ff",
+      "source_archive": "drive-download-20261024T150622Z-1-001.zip",
+      "verification_status": "unverified",
+      "publication_status": "draft",
+      "supported_format": false,
+      "requires_manual_review": true
+    },
+    {
+      "id": "wat_a77c25a8a374",
+      "category": "WAT",
+      "subcategory": "WORD_ASSOCIATION",
+      "title": "Wat 3 - Practice Test (F)",
+      "original_filename": "WAT 3 - PRACTICE TEST (F).pptx",
+      "staged_path": "data/staging/WAT/WAT 3 - PRACTICE TEST (F).pptx",
+      "file_size": 99509,
+      "file_extension": ".pptx",
+      "sha256": "e8b1f65cbab7739c2dd0b2a48d2c72f794128f0b9c01e05f51974caceff49eb3",
+      "source_archive": "drive-download-20261024T150622Z-1-001.zip",
+      "verification_status": "unverified",
+      "publication_status": "draft",
+      "supported_format": false,
+      "requires_manual_review": true
+    },
+    {
+      "id": "wat_bf157162c7ad",
+      "category": "WAT",
+      "subcategory": "WORD_ASSOCIATION",
+      "title": "Wat 4 - Practice Test (F)",
+      "original_filename": "WAT 4 - PRACTICE TEST (F).ppt",
+      "staged_path": "data/staging/WAT/WAT 4 - PRACTICE TEST (F).ppt",
+      "file_size": 339968,
+      "file_extension": ".ppt",
+      "sha256": "5ea1b6c375190c1fecdb46c8d4109c5e7e8a30de2ef7f86cbdd15ffe57d592ea",
+      "source_archive": "drive-download-20261024T150622Z-1-001.zip",
+      "verification_status": "unverified",
+      "publication_status": "draft",
+      "supported_format": false,
+      "requires_manual_review": true
+    },
+    {
+      "id": "wat_9cf3e6dcd34e",
+      "category": "WAT",
+      "subcategory": "WORD_ASSOCIATION",
+      "title": "Wat 2 - Practice Test (F)",
+      "original_filename": "WAT 2 - PRACTICE TEST (F).ppt",
+      "staged_path": "data/staging/WAT/WAT 2 - PRACTICE TEST (F).ppt",
+      "file_size": 195584,
+      "file_extension": ".ppt",
+      "sha256": "9cf04f74b428843f7d91ba277498ccc689750634e036904d15750cea0a271b5f",
+      "source_archive": "drive-download-20261024T150622Z-1-001.zip",
+      "verification_status": "unverified",
+      "publication_status": "draft",
+      "supported_format": false,
+      "requires_manual_review": true
+    }
+  ]
+}
