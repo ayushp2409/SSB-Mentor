@@ -260,11 +260,43 @@ export const DashboardPage: React.FC = () => {
               </Link>
 
               <Link
-                to="/interview"
-                className="p-3.5 rounded-xl bg-slate-900/60 hover:bg-slate-900 border border-slate-700/80 hover:border-military-500/60 transition-all group"
+                to="/interview/simulate"
+                className="p-3.5 rounded-xl bg-slate-900/60 hover:bg-slate-900 border border-slate-700/80 hover:border-amber-400/60 transition-all group"
               >
-                <div className="text-amber-400 font-bold text-sm group-hover:text-amber-300">CIQ Interview</div>
-                <div className="text-xs text-slate-400 mt-1">6 CIQs & technical</div>
+                <div className="text-amber-400 font-bold text-sm group-hover:text-amber-300">AI Interview</div>
+                <div className="text-xs text-slate-400 mt-1">Cross-questioning IO</div>
+              </Link>
+
+              <Link
+                to="/gto/gd-simulator"
+                className="p-3.5 rounded-xl bg-slate-900/60 hover:bg-slate-900 border border-slate-700/80 hover:border-amber-400/60 transition-all group"
+              >
+                <div className="text-amber-400 font-bold text-sm group-hover:text-amber-300">GD Simulator</div>
+                <div className="text-xs text-slate-400 mt-1">4 AI group personas</div>
+              </Link>
+
+              <Link
+                to="/olq"
+                className="p-3.5 rounded-xl bg-slate-900/60 hover:bg-slate-900 border border-slate-700/80 hover:border-amber-400/60 transition-all group"
+              >
+                <div className="text-amber-400 font-bold text-sm group-hover:text-amber-300">15 OLQs Dossier</div>
+                <div className="text-xs text-slate-400 mt-1">Evidence analytics</div>
+              </Link>
+
+              <Link
+                to="/knowledge"
+                className="p-3.5 rounded-xl bg-slate-900/60 hover:bg-slate-900 border border-slate-700/80 hover:border-amber-400/60 transition-all group"
+              >
+                <div className="text-amber-400 font-bold text-sm group-hover:text-amber-300">Defence Mentor</div>
+                <div className="text-xs text-slate-400 mt-1">AI briefing & quiz</div>
+              </Link>
+
+              <Link
+                to="/roadmap"
+                className="p-3.5 rounded-xl bg-slate-900/60 hover:bg-slate-900 border border-slate-700/80 hover:border-amber-400/60 transition-all group"
+              >
+                <div className="text-amber-400 font-bold text-sm group-hover:text-amber-300">Cadet Roadmap</div>
+                <div className="text-xs text-slate-400 mt-1">Adaptive schedule</div>
               </Link>
 
               <Link

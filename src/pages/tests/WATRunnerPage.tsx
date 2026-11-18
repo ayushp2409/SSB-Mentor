@@ -5,6 +5,9 @@ import { questionService } from '../../services/questionService';
 import { attemptService } from '../../services/attemptService';
 import { reflectionService } from '../../services/reflectionService';
 import { Question, TestResponse } from '../../types';
+import { candidateMemoryService } from '../../services/candidateMemoryService';
+import { evaluateWATBatch } from '../../services/aiService';
+import { WATBatchEvaluation } from '../../types/ai';
 import {
   Clock,
   CheckCircle2,
@@ -16,7 +19,9 @@ import {
   ShieldAlert,
   Save,
   Flame,
-  Award
+  Award,
+  Sparkles,
+  Loader2
 } from 'lucide-react';
 
 export const WATRunnerPage: React.FC = () => {
@@ -38,6 +43,51 @@ export const WATRunnerPage: React.FC = () => {
   const [attemptId, setAttemptId] = useState<string>('');
   const [testStartTime, setTestStartTime] = useState<number>(0);
   const [wordStartTime, setWordStartTime] = useState<number>(0);
+
+  // AI Evaluation State
+  const [watEvaluation, setWatEvaluation] = useState<WATBatchEvaluation | null>(null);
+  const [aiEvalLoading, setAiEvalLoading] = useState(false);
+
+  const handleEvaluateWAT = async () => {
+    if (responses.length === 0) return;
+    setAiEvalLoading(true);
+    try {
+      const pairList = responses
+        .map((r, i) => ({
+          word: questions[i]?.title || r.questionId,
+          response: r.responseText || '',
+        }))
+        .filter((p) => p.response.trim().length > 0);
+
+      const res = await evaluateWATBatch(pairList);
+      if (res.success && res.data) {
+        setWatEvaluation(res.data);
+        if (user) {
+          candidateMemoryService.saveWATSession(user.id, {
+            sessionDate: new Date().toISOString(),
+            totalWords: res.data.totalResponses,
+            genericCount: res.data.genericResponsesCount,
+          });
+
+          if (res.data.olqEvidence && res.data.olqEvidence.length > 0) {
+            candidateMemoryService.addOLQEvidence(
+              user.id,
+              res.data.olqEvidence.map((e) => ({
+                olqName: e.olq,
+                level: e.level,
+                evidence: e.evidence,
+                source: 'WAT' as const,
+                sessionId: attemptId || `wat_${Date.now()}`,
+                timestamp: new Date().toISOString(),
+              }))
+            );
+          }
+        }
+      }
+    } finally {
+      setAiEvalLoading(false);
+    }
+  };
 
   const inputRef = useRef<HTMLInputElement>(null);
   const timerRef = useRef<any>(null);
@@ -353,6 +403,88 @@ export const WATRunnerPage: React.FC = () => {
             <div className="text-xl font-bold text-amber-400">{(avgLatencyMs / 1000).toFixed(1)}s</div>
           </div>
         </div>
+      </div>
+
+      {/* AI WAT Response Evaluation & Cliché Detector */}
+      <div className="bg-slate-800/90 border border-blue-500/30 rounded-2xl p-6 shadow-xl space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-700/80 gap-3">
+          <div className="flex items-center space-x-2.5">
+            <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/30 text-blue-400 flex items-center justify-center">
+              <Sparkles className="w-4 h-4" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-white">AI Subconscious Response Analysis</h3>
+              <p className="text-xs text-slate-400">Detects coached clichés vs natural spontaneous associations</p>
+            </div>
+          </div>
+
+          <button
+            onClick={handleEvaluateWAT}
+            disabled={aiEvalLoading || responses.length === 0}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold text-xs rounded-xl flex items-center space-x-1.5 transition-colors shadow-md shrink-0"
+          >
+            {aiEvalLoading ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <span>Evaluating Responses...</span>
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Run AI Cliché & Pattern Analysis</span>
+              </>
+            )}
+          </button>
+        </div>
+
+        {!watEvaluation && !aiEvalLoading && (
+          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-700/60 text-center space-y-1">
+            <p className="text-xs text-slate-300">
+              Click "Run AI Cliché & Pattern Analysis" to analyze your {responses.length} reactions against standard SSB coaching patterns.
+            </p>
+          </div>
+        )}
+
+        {watEvaluation && (
+          <div className="space-y-4">
+            <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-700 text-xs text-slate-300 leading-relaxed">
+              <strong className="text-white">Psychologist Feedback: </strong>
+              {watEvaluation.overallFeedback}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-700/60 space-y-1 text-center">
+                <div className="text-[11px] text-slate-400">Generic/Coached Phrases</div>
+                <div className="text-2xl font-bold text-amber-400">{watEvaluation.genericResponsesCount}</div>
+                <div className="text-[10px] text-slate-500">Aim for 0 coached clichés</div>
+              </div>
+              <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-700/60 space-y-1 text-center">
+                <div className="text-[11px] text-slate-400">Positive Action Patterns</div>
+                <div className="text-2xl font-bold text-emerald-400">{watEvaluation.positivePatterns.length}</div>
+                <div className="text-[10px] text-slate-500">Constructive thoughts</div>
+              </div>
+              <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-700/60 space-y-1 text-center">
+                <div className="text-[11px] text-slate-400">Dominant Personality Themes</div>
+                <div className="text-sm font-bold text-blue-400 mt-1 line-clamp-1">
+                  {watEvaluation.overallThemes.join(', ') || 'Leadership'}
+                </div>
+                <div className="text-[10px] text-slate-500">Subconscious core</div>
+              </div>
+            </div>
+
+            {/* Recommendations */}
+            {watEvaluation.practiceRecommendations.length > 0 && (
+              <div className="p-3.5 rounded-xl bg-military-900/50 border border-military-700/50 text-xs space-y-1">
+                <div className="font-bold text-amber-400">Targeted WAT Refinement:</div>
+                <ul className="space-y-0.5 text-slate-300 list-disc list-inside">
+                  {watEvaluation.practiceRecommendations.map((r, i) => (
+                    <li key={i}>{r}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Item-by-Item Review List */}

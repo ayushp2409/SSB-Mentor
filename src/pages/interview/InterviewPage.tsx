@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { questionService } from '../../services/questionService';
 import { Question } from '../../types';
@@ -81,6 +82,26 @@ export const InterviewPage: React.FC = () => {
         <p className="text-sm text-slate-400 max-w-3xl mt-1.5 leading-relaxed">
           The Interviewing Officer (IO) tests your self-awareness, personal integrity, values, and depth of experiences through rapid Comprehensive Information Questionnaires (CIQs). Build genuine personal examples based on your own life history.
         </p>
+      </div>
+
+      {/* AI Interview Simulator Banner */}
+      <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-military-900 via-slate-800 to-navy-900 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
+        <div className="space-y-1">
+          <div className="flex items-center space-x-2 text-amber-400 font-bold text-sm">
+            <Sparkles className="w-4 h-4 text-amber-400" />
+            <span>AI Personal Interview Simulator with IO Dynamic Cross-Questioning</span>
+          </div>
+          <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
+            Practice a realistic 1-on-1 interview with dynamic probing follow-up questions customized to your PIQ. Supports speech voice input and provides a comprehensive 8-dimension evaluation report.
+          </p>
+        </div>
+        <Link
+          to="/interview/simulate"
+          className="shrink-0 px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-2"
+        >
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>Launch AI Interview →</span>
+        </Link>
       </div>
 
       {/* Category Pills */}

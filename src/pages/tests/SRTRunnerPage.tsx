@@ -5,6 +5,9 @@ import { questionService } from '../../services/questionService';
 import { attemptService } from '../../services/attemptService';
 import { reflectionService } from '../../services/reflectionService';
 import { Question, TestResponse } from '../../types';
+import { candidateMemoryService } from '../../services/candidateMemoryService';
+import { evaluateSRTBatch } from '../../services/aiService';
+import { SRTBatchEvaluation } from '../../types/ai';
 import {
   Clock,
   Play,
@@ -16,7 +19,10 @@ import {
   FileText,
   ChevronLeft,
   ChevronRight,
-  Award
+  Award,
+  Sparkles,
+  Loader2,
+  AlertTriangle
 } from 'lucide-react';
 
 export const SRTRunnerPage: React.FC = () => {
@@ -36,6 +42,54 @@ export const SRTRunnerPage: React.FC = () => {
   const [secondsRemaining, setSecondsRemaining] = useState<number>(1800); // 30 minutes
   const [attemptId, setAttemptId] = useState<string>('');
   const [testStartTime, setTestStartTime] = useState<number>(0);
+
+  // AI Evaluation State
+  const [srtEvaluation, setSrtEvaluation] = useState<SRTBatchEvaluation | null>(null);
+  const [aiEvalLoading, setAiEvalLoading] = useState(false);
+
+  const handleEvaluateSRT = async () => {
+    const list = questions.slice(0, totalCount).map((q) => ({
+      situation: q.content || q.title,
+      response: responsesMap[q.id] || '',
+    })).filter((item) => item.response.trim().length > 0);
+
+    if (list.length === 0) return;
+    setAiEvalLoading(true);
+
+    try {
+      const res = await evaluateSRTBatch(list);
+      if (res.success && res.data) {
+        setSrtEvaluation(res.data);
+        if (user) {
+          const highPracticalityCount = res.data.analyzedResponses.filter(
+            (r) => r.practicality === 'high'
+          ).length;
+
+          candidateMemoryService.saveSRTSession(user.id, {
+            sessionDate: new Date().toISOString(),
+            totalSituations: res.data.totalSituations,
+            highPracticality: highPracticalityCount,
+          });
+
+          if (res.data.olqEvidence && res.data.olqEvidence.length > 0) {
+            candidateMemoryService.addOLQEvidence(
+              user.id,
+              res.data.olqEvidence.map((e) => ({
+                olqName: e.olq,
+                level: e.level,
+                evidence: e.evidence,
+                source: 'SRT' as const,
+                sessionId: attemptId || `srt_${Date.now()}`,
+                timestamp: new Date().toISOString(),
+              }))
+            );
+          }
+        }
+      }
+    } finally {
+      setAiEvalLoading(false);
+    }
+  };
 
   const timerRef = useRef<any>(null);
 
@@ -359,6 +413,104 @@ export const SRTRunnerPage: React.FC = () => {
             <div className="text-xs text-slate-400">Completion Rate</div>
             <div className="text-2xl font-bold text-sky-400">{Math.round((answeredCount / questions.length) * 100)}%</div>
           </div>
+        </div>
+
+        {/* AI Practicality & Decision Quality Evaluator */}
+        <div className="bg-slate-900/80 border border-blue-500/30 rounded-2xl p-6 space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-700/80 gap-3">
+            <div className="flex items-center space-x-2.5">
+              <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/30 text-blue-400 flex items-center justify-center">
+                <Sparkles className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-white">AI Practicality & Crisis Decision Evaluator</h3>
+                <p className="text-[11px] text-slate-400">Assesses action-orientation, safety protocols, and resource allocation</p>
+              </div>
+            </div>
+
+            <button
+              onClick={handleEvaluateSRT}
+              disabled={aiEvalLoading || answeredCount === 0}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold text-xs rounded-xl flex items-center space-x-1.5 transition-colors shadow-md shrink-0"
+            >
+              {aiEvalLoading ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Evaluating Actions...</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Run AI Evaluation</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          {!srtEvaluation && !aiEvalLoading && (
+            <div className="p-4 rounded-xl bg-slate-800/60 border border-slate-700/60 text-center space-y-1">
+              <p className="text-xs text-slate-300">
+                Click "Run AI Evaluation" to grade your {answeredCount} reactions for practicality, initiative, and safety awareness.
+              </p>
+            </div>
+          )}
+
+          {srtEvaluation && (
+            <div className="space-y-4">
+              <div className="p-3.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-slate-300 leading-relaxed">
+                <strong className="text-white">Assessor Feedback: </strong>
+                {srtEvaluation.overallFeedback}
+              </div>
+
+              {/* Sample Detailed Situations */}
+              <div className="space-y-2.5">
+                <div className="text-xs font-bold text-amber-400 uppercase tracking-wider">
+                  Analyzed Responses & Suggested Improvements:
+                </div>
+                <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
+                  {srtEvaluation.analyzedResponses.slice(0, 5).map((ar, i) => (
+                    <div key={i} className="p-3 rounded-xl bg-slate-800/80 border border-slate-700/60 space-y-1.5 text-xs">
+                      <div className="text-slate-300 font-semibold">{ar.situation}</div>
+                      <div className="text-slate-400">
+                        <strong className="text-slate-200">Your Action: </strong>
+                        {ar.response}
+                      </div>
+                      <div className="flex items-center space-x-2 text-[10px] pt-0.5">
+                        <span className={`px-2 py-0.5 rounded font-mono ${
+                          ar.practicality === 'high' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'
+                        }`}>
+                          Practicality: {ar.practicality}
+                        </span>
+                        <span className={`px-2 py-0.5 rounded font-mono ${
+                          ar.decisionQuality === 'sound' ? 'bg-blue-500/20 text-blue-300' : 'bg-slate-700 text-slate-300'
+                        }`}>
+                          Decision: {ar.decisionQuality}
+                        </span>
+                      </div>
+                      {ar.improvedResponse && (
+                        <div className="p-2 rounded-lg bg-military-900/60 border border-military-700/40 text-[11px] text-military-200 italic">
+                          <strong>Recommended Alternative: </strong>
+                          {ar.improvedResponse}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Practice Recommendations */}
+              {srtEvaluation.practiceRecommendations.length > 0 && (
+                <div className="p-3.5 rounded-xl bg-military-900/50 border border-military-700/50 text-xs space-y-1">
+                  <div className="font-bold text-amber-400">Tactical SRT Improvement Tips:</div>
+                  <ul className="space-y-0.5 text-slate-300 list-disc list-inside">
+                    {srtEvaluation.practiceRecommendations.map((r, i) => (
+                      <li key={i}>{r}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="flex items-center justify-between pt-4">

@@ -4,6 +4,9 @@ import { useAuth } from '../../context/AuthContext';
 import { questionService } from '../../services/questionService';
 import { attemptService } from '../../services/attemptService';
 import { Question, TestResponse, SelfReflection } from '../../types';
+import { candidateMemoryService } from '../../services/candidateMemoryService';
+import { evaluateTATStory } from '../../services/aiService';
+import { TATEvaluation } from '../../types/ai';
 import {
   Clock,
   Play,
@@ -14,7 +17,10 @@ import {
   Save,
   Award,
   Sparkles,
-  HelpCircle
+  HelpCircle,
+  Loader2,
+  CheckCircle2,
+  AlertTriangle
 } from 'lucide-react';
 
 export const TATRunnerPage: React.FC = () => {
@@ -42,6 +48,57 @@ export const TATRunnerPage: React.FC = () => {
   const [perceivedConfidence, setPerceivedConfidence] = useState(4);
   const [keyOLQs, setKeyOLQs] = useState<string[]>(['Initiative', 'Self Confidence', 'Sense of Responsibility']);
   const [reviewNotes, setReviewNotes] = useState('');
+
+  // AI Evaluation State
+  const [tatEvaluation, setTatEvaluation] = useState<TATEvaluation | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [selectedStoryIndex, setSelectedStoryIndex] = useState(0);
+
+  const handleEvaluateStory = async (index: number) => {
+    const targetResponse = responses[index];
+    const targetQuestion = questions[index];
+    if (!targetResponse || !targetResponse.responseText) return;
+
+    setAiLoading(true);
+    setSelectedStoryIndex(index);
+    try {
+      const piq = user ? candidateMemoryService.getPIQ(user.id) : undefined;
+      const result = await evaluateTATStory(
+        targetResponse.responseText,
+        targetQuestion?.assetUrl || targetQuestion?.id || `TAT Slide ${index + 1}`,
+        piq
+      );
+
+      if (result.success && result.data) {
+        setTatEvaluation(result.data);
+        if (user) {
+          candidateMemoryService.saveTATEntry(user.id, {
+            storyText: targetResponse.responseText,
+            imageRef: targetQuestion?.assetUrl || `TAT Slide ${index + 1}`,
+            evaluatedAt: new Date().toISOString(),
+            strengths: result.data.strengths,
+            microActions: result.data.microActions,
+          });
+
+          if (result.data.olqEvidence && result.data.olqEvidence.length > 0) {
+            candidateMemoryService.addOLQEvidence(
+              user.id,
+              result.data.olqEvidence.map((e) => ({
+                olqName: e.olq,
+                level: e.level,
+                evidence: e.evidence,
+                source: 'TAT' as const,
+                sessionId: attemptId || `tat_${Date.now()}`,
+                timestamp: new Date().toISOString(),
+              }))
+            );
+          }
+        }
+      }
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   const timerRef = useRef<any>(null);
 
@@ -414,6 +471,139 @@ export const TATRunnerPage: React.FC = () => {
               className="w-full bg-slate-900 border border-slate-700 focus:border-emerald-400 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-hidden"
             />
           </div>
+        </div>
+
+        {/* AI Story Evaluation & Micro-Action Generator */}
+        <div className="bg-slate-800/80 border border-blue-500/30 rounded-2xl p-6 shadow-xl space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-700/80 gap-3">
+            <div className="flex items-center space-x-2.5">
+              <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/30 text-blue-400 flex items-center justify-center">
+                <Sparkles className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-white">AI Story Evaluation & Micro-Action Generator</h3>
+                <p className="text-xs text-slate-400">Identifies vague narrative steps and recommends concrete practical actions</p>
+              </div>
+            </div>
+
+            {responses.length > 0 && (
+              <div className="flex items-center space-x-2">
+                <select
+                  value={selectedStoryIndex}
+                  onChange={(e) => setSelectedStoryIndex(Number(e.target.value))}
+                  className="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white"
+                >
+                  {responses.map((_, idx) => (
+                    <option key={idx} value={idx}>
+                      Story #{idx + 1}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => handleEvaluateStory(selectedStoryIndex)}
+                  disabled={aiLoading}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold text-xs rounded-xl flex items-center space-x-1.5 transition-colors shadow-md"
+                >
+                  {aiLoading ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Evaluating...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Evaluate Story #{selectedStoryIndex + 1}</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+          </div>
+
+          {!tatEvaluation && !aiLoading && (
+            <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-700/60 text-center space-y-2">
+              <p className="text-xs text-slate-300">
+                Select any of your written stories above and click "Evaluate Story" to analyze character initiative, planning steps, and generate specific micro-actions.
+              </p>
+            </div>
+          )}
+
+          {tatEvaluation && (
+            <div className="space-y-5">
+              {/* Summary */}
+              <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-700 text-xs text-slate-300 leading-relaxed">
+                <strong className="text-white">Assessor Summary: </strong>
+                {tatEvaluation.summary}
+              </div>
+
+              {/* Strengths & Missing Elements */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20 space-y-2">
+                  <div className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center space-x-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>Story Strengths</span>
+                  </div>
+                  <ul className="text-xs text-slate-300 space-y-1">
+                    {tatEvaluation.strengths.map((s, i) => (
+                      <li key={i} className="flex items-start space-x-2">
+                        <span className="text-emerald-400">•</span>
+                        <span>{s}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20 space-y-2">
+                  <div className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center space-x-1.5">
+                    <AlertTriangle className="w-3.5 h-3.5" />
+                    <span>Missing Elements & Vague Areas</span>
+                  </div>
+                  <ul className="text-xs text-slate-300 space-y-1">
+                    {tatEvaluation.improvementAreas.map((a, i) => (
+                      <li key={i} className="flex items-start space-x-2">
+                        <span className="text-amber-400">•</span>
+                        <span>{a}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              {/* Micro-Actions Generator */}
+              <div className="p-4 rounded-xl bg-blue-500/5 border border-blue-500/20 space-y-2.5">
+                <div className="text-xs font-bold text-blue-400 uppercase tracking-wider">
+                  Suggested Micro-Actions (Concrete Behavioral Steps)
+                </div>
+                <p className="text-[11px] text-slate-400">
+                  Instead of generic phrases like "he worked hard and solved it", experienced assessors look for these specific, realistic steps:
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-200 pt-1">
+                  {tatEvaluation.microActions.map((action, i) => (
+                    <div key={i} className="p-2.5 rounded-lg bg-slate-900 border border-slate-700/60 flex items-start space-x-2">
+                      <span className="text-blue-400 font-bold">{i + 1}.</span>
+                      <span>{action}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Improved Illustrative Version */}
+              {tatEvaluation.improvedIllustrativeVersion && (
+                <div className="p-4 rounded-xl bg-slate-900 border border-purple-500/30 space-y-2">
+                  <div className="text-xs font-bold text-purple-400 uppercase tracking-wider">
+                    Improved Illustrative Story Version
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed italic">
+                    "{tatEvaluation.improvedIllustrativeVersion}"
+                  </p>
+                </div>
+              )}
+
+              {/* Disclaimer */}
+              <p className="text-[10px] text-slate-500 italic">{tatEvaluation.disclaimer}</p>
+            </div>
+          )}
         </div>
 
         <button

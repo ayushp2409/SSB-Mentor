@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { questionService } from '../../services/questionService';
 import { Question } from '../../types';
 import {
@@ -80,6 +81,26 @@ export const GTOPage: React.FC = () => {
         <p className="text-sm text-slate-400 max-w-3xl mt-1.5 leading-relaxed">
           The GTO battery assesses social adaptability, group coordination, courage, and practical situational decision-making. Practice structured planning in the Group Planning Exercise (GPE) and multi-perspective thinking for Group Discussions (GD).
         </p>
+      </div>
+
+      {/* GD Simulator Banner */}
+      <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-military-900 via-slate-800 to-navy-900 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
+        <div className="space-y-1">
+          <div className="flex items-center space-x-2 text-amber-400 font-bold text-sm">
+            <Users2 className="w-4 h-4 text-amber-400" />
+            <span>Virtual Multi-Agent Group Discussion (GD) Simulator</span>
+          </div>
+          <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
+            Practice discussing critical defence and national issues with 4 autonomous AI candidates representing Confident, Analytical, Assertive, and Skeptic group archetypes with a 15-minute timer.
+          </p>
+        </div>
+        <Link
+          to="/gto/gd-simulator"
+          className="shrink-0 px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-2"
+        >
+          <ArrowRight className="w-3.5 h-3.5" />
+          <span>Launch GD Simulator →</span>
+        </Link>
       </div>
 
       {/* Tabs */}

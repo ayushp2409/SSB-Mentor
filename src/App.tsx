@@ -15,10 +15,17 @@ import { PPDTRunnerPage } from './pages/tests/PPDTRunnerPage';
 
 import { LecturettePage } from './pages/lecturette/LecturettePage';
 import { GTOPage } from './pages/gto/GTOPage';
+import { GDSimulatorPage } from './pages/gto/GDSimulatorPage';
 import { InterviewPage } from './pages/interview/InterviewPage';
+import { InterviewSimulatorPage } from './pages/interview/InterviewSimulatorPage';
 import { JournalPage } from './pages/journal/JournalPage';
 import { ProgressPage } from './pages/progress/ProgressPage';
 import { AdminPage } from './pages/admin/AdminPage';
+
+// New AI-powered pages
+import { OLQPage } from './pages/olq/OLQPage';
+import { KnowledgePage } from './pages/knowledge/KnowledgePage';
+import { RoadmapPage } from './pages/roadmap/RoadmapPage';
 
 export const App: React.FC = () => {
   return (
@@ -41,10 +48,17 @@ export const App: React.FC = () => {
 
             <Route path="/lecturette" element={<LecturettePage />} />
             <Route path="/gto" element={<GTOPage />} />
+            <Route path="/gto/gd-simulator" element={<GDSimulatorPage />} />
             <Route path="/interview" element={<InterviewPage />} />
+            <Route path="/interview/simulate" element={<InterviewSimulatorPage />} />
             <Route path="/journal" element={<JournalPage />} />
             <Route path="/progress" element={<ProgressPage />} />
             <Route path="/admin" element={<AdminPage />} />
+
+            {/* New AI pages */}
+            <Route path="/olq" element={<OLQPage />} />
+            <Route path="/knowledge" element={<KnowledgePage />} />
+            <Route path="/roadmap" element={<RoadmapPage />} />
           </Route>
 
           {/* Fallback */}

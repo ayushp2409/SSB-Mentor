@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { AISettingsModal } from '../ai/AISettingsModal';
+import { getActiveProvider } from '../../services/aiService';
 import {
   Shield,
   LayoutDashboard,
@@ -14,20 +16,36 @@ import {
   LogOut,
   Menu,
   X,
-  UserCheck
+  UserCheck,
+  Cpu,
+  MessageCircle,
+  Map,
+  Star,
+  Globe
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
   const { user, isAdmin, logout, switchDemoRole } = useAuth();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [aiSettingsOpen, setAISettingsOpen] = useState(false);
+
+  const provider = getActiveProvider();
+  const providerDot: Record<string, string> = {
+    gemini: 'bg-blue-400',
+    openai: 'bg-emerald-400',
+    heuristic: 'bg-amber-400',
+  };
 
   const navLinks = [
     { label: 'Dashboard', path: '/', icon: LayoutDashboard },
     { label: 'Psychology', path: '/psychology', icon: BrainCircuit },
+    { label: 'Interview', path: '/interview', icon: FileQuestion },
     { label: 'Lecturette', path: '/lecturette', icon: Mic },
     { label: 'GTO Tasks', path: '/gto', icon: Users2 },
-    { label: 'Interview', path: '/interview', icon: FileQuestion },
+    { label: 'Knowledge', path: '/knowledge', icon: Globe },
+    { label: 'OLQ Analysis', path: '/olq', icon: Star },
+    { label: 'Roadmap', path: '/roadmap', icon: Map },
     { label: 'SDT & Journal', path: '/journal', icon: BookMarked },
     { label: 'Progress', path: '/progress', icon: TrendingUp },
   ];
@@ -53,11 +71,11 @@ export const Navbar: React.FC = () => {
             <div>
               <div className="flex items-center space-x-1.5">
                 <span className="font-bold text-lg tracking-wide text-white">SSB MENTOR</span>
-                <span className="text-xs bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded font-mono font-semibold uppercase">
-                  Cadet Prep
+                <span className="text-xs bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded font-mono font-semibold uppercase">
+                  AI
                 </span>
               </div>
-              <p className="text-[10px] text-slate-400 font-medium tracking-tight">Services Selection Board Platform</p>
+              <p className="text-[10px] text-slate-400 font-medium tracking-tight">AI-Powered SSB Preparation</p>
             </div>
           </Link>
 
@@ -83,8 +101,19 @@ export const Navbar: React.FC = () => {
             })}
           </nav>
 
-          {/* Right Action / Role Quick-Switch */}
+          {/* Right Action */}
           <div className="hidden sm:flex items-center space-x-3">
+            {/* AI Settings Button */}
+            <button
+              onClick={() => setAISettingsOpen(true)}
+              className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg bg-slate-800 border border-slate-700 hover:border-slate-600 text-xs text-slate-300 hover:text-white transition-colors"
+              title="AI Engine Settings"
+            >
+              <Cpu className="w-3.5 h-3.5 text-blue-400" />
+              <span className="hidden xl:inline">AI Settings</span>
+              <span className={`w-1.5 h-1.5 rounded-full ${providerDot[provider]}`} title={`Provider: ${provider}`} />
+            </button>
+
             {/* Quick Demo Role Switcher */}
             <div className="flex items-center bg-slate-800 p-1 rounded-lg border border-slate-700 text-xs">
               <button
@@ -137,6 +166,13 @@ export const Navbar: React.FC = () => {
           {/* Mobile menu button */}
           <div className="lg:hidden flex items-center space-x-2">
             <button
+              onClick={() => setAISettingsOpen(true)}
+              className="p-2 rounded-md text-blue-400 hover:bg-slate-800"
+              title="AI Settings"
+            >
+              <Cpu className="w-5 h-5" />
+            </button>
+            <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 focus:outline-hidden"
             >
@@ -148,7 +184,7 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-slate-900 border-b border-slate-800 px-4 pt-2 pb-4 space-y-2">
+        <div className="lg:hidden bg-slate-900 border-b border-slate-800 px-4 pt-2 pb-4 space-y-2 max-h-96 overflow-y-auto">
           {navLinks.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
@@ -195,6 +231,9 @@ export const Navbar: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* AI Settings Modal */}
+      <AISettingsModal isOpen={aiSettingsOpen} onClose={() => setAISettingsOpen(false)} />
     </header>
   );
 };
